@@ -50,3 +50,8 @@ jobs:
           gh release upload "${GITHUB_REF#refs/tags/}" upload/* || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout with fetch-depth=50 and fetch-tags=true
+        uses: RobertWieczoreck/checkout@b9d6ac43b8b251913ae7710900b7e6c29b6f52e3
+        with:
+          fetch-depth: 50
+          fetch-tags: true
