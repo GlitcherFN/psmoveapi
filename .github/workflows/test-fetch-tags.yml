@@ -1,0 +1,72 @@
+name: Test fetch-tags
+
+on:
+  push:
+    branches:
+      - add-fetch-tags-option-test
+
+jobs:
+  test-fetch-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: AutoModality/action-clean@v1.1.0
+      - name: 1. Checkout without options
+        uses: RobertWieczoreck/checkout@add-fetch-tags-option
+      - name: 1. Expect no tags
+        run: |
+          tagCount=$(git tag | wc -l)
+          if [[ $tagCount != 0 ]]; then
+            echo "$tagCount tags found - 0 expected!" && exit 1
+          fi
+
+      - uses: AutoModality/action-clean@v1.1.0
+      - name: 2. Checkout with fetch-depth=0 and fetch-tags=false (default)
+        uses: RobertWieczoreck/checkout@add-fetch-tags-option
+        with:
+          fetch-depth: 0
+      - name: 2. Expect all tags
+        run: |
+          tagCount=$(git tag | wc -l)
+          if [[ $tagCount != 29 ]]; then
+            echo "$tagCount tags found - 29 expected!" && exit 1
+          fi
+
+      - uses: AutoModality/action-clean@v1.1.0
+      - name: 3. Checkout with fetch-depth=0 and fetch-tags=true
+        uses: RobertWieczoreck/checkout@add-fetch-tags-option
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: 3. Expect all tags
+        run: |
+          tagCount=$(git tag | wc -l)
+          if [[ $tagCount != 29 ]]; then
+            echo "$tagCount tags found - 29 expected!" && exit 1
+          fi
+
+      - uses: AutoModality/action-clean@v1.1.0
+      - name: 4. Checkout with fetch-depth=10 and fetch-tags=false
+        uses: RobertWieczoreck/checkout@add-fetch-tags-option
+        with:
+          fetch-depth: 10
+          fetch-tags: false
+      - name: 4. Expect no tags
+        run: |
+          tagCount=$(git tag | wc -l)
+          if [[ $tagCount != 0 ]]; then
+            echo "$tagCount tags found - 0 expected!" && exit 1
+          fi
+
+
+      - uses: AutoModality/action-clean@v1.1.0
+      - name: 5. Checkout with fetch-depth=20 and fetch-tags=true
+        uses: RobertWieczoreck/checkout@add-fetch-tags-option
+        with:
+          fetch-depth: 20
+          fetch-tags: true
+      - name: 5. Expect 2 tags
+        run: |
+          tagCount=$(git tag | wc -l)
+          if [[ $tagCount != 2 ]]; then
+            echo "$tagCount tags found - 2 expected!" && exit 1
+          fi
